@@ -1,5 +1,6 @@
 package sg.edu.np.mad.madpractical4;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -18,6 +19,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
+    private User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,37 +30,38 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Random rand = new Random();
-        int newRandom = rand.nextInt(1000);
-        //initialize a new User object
-        User user = new User("MAD " + newRandom,"MAD Developer", 1, false );
-        //Get the TextViews and Button from the layout
-        TextView tvName = findViewById(R.id.helloWorld);
-        TextView tvDescription = findViewById(R.id.descriptionTxt);
-        Button btnFollow = findViewById(R.id.followBTN);
-        //Set the TextViews with the User's name, description and default button message
-        tvName.setText(user.name);
-        tvDescription.setText(user.description);
-        btnFollow.setText("Follow");
+        Intent intent = getIntent();
+        String name = intent.getStringExtra("name");
+        String description = intent.getStringExtra("description");
+        boolean followed = intent.getBooleanExtra("followed", false);
 
-        btnFollow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (user.followed == true)
-                {
-                    btnFollow.setText("UnFollowed");
-                    user.followed = false;
-                    Toast.makeText(getApplicationContext(), "Unfollowed", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    btnFollow.setText("Followed");
-                    user.followed = true;
-                    Toast.makeText(getApplicationContext(), "Followed", Toast.LENGTH_SHORT).show();
-                }
+        user = new User(name, description, 1, followed);
 
-            }
-        });
+        if (name != null && description != null) {
+            TextView tvName = findViewById(R.id.helloWorld);
+            TextView tvDescription = findViewById(R.id.descriptionTxt);
+            Button btnFollow = findViewById(R.id.followBTN);
+
+            tvName.setText(user.name);
+            tvDescription.setText(user.description);
+            btnFollow.setText(user.followed ? "Followed" : "Follow");
+
+
+            btnFollow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (user.followed) {
+                        btnFollow.setText("UnFollowed");
+                        user.followed = false;
+                        Toast.makeText(getApplicationContext(), "Unfollowed", Toast.LENGTH_SHORT).show();
+                    } else {
+                        btnFollow.setText("Followed");
+                        user.followed = true;
+                        Toast.makeText(getApplicationContext(), "Followed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
 
 
 
